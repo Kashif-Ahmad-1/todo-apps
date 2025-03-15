@@ -1,95 +1,47 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+
+import Head from 'next/head';
+import Header from '../components/Header';
+import TaskForm from '../components/TaskForm';
+import TaskItem from '../components/TaskItem';
+import { useTasks } from '../context/TaskContext';
+import { FaTrashAlt } from 'react-icons/fa';
+import styles from '../styles/Home.module.css';
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>app/page.js</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const { tasks, clearCompleted } = useTasks();
+  const pendingTasks = tasks.filter(task => !task.completed).length;
+  const completedTasks = tasks.filter(task => task.completed).length;
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+  return (
+    <div className={styles.container}>
+      <Head>
+        <title>Todo List App</title>
+        <meta name="description" content="A beautiful todo list app" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
+      <main className={styles.main}>
+        <Header />
+        <TaskForm />
+        <div className={styles.taskStats}>
+          <span>Pending: {pendingTasks}</span>
+          <span>Completed: {completedTasks}</span>
+          {completedTasks > 0 && (
+            <button onClick={clearCompleted} className={styles.clearButton}>
+              <FaTrashAlt /> Clear Completed
+            </button>
+          )}
+        </div>
+        <div className={styles.taskList}>
+          {tasks.map(task => (
+            <TaskItem key={task.id} task={task} />
+          ))}
+          {tasks.length === 0 && (
+            <p className={styles.empty}>No tasks yet! Add some above.</p>
+          )}
         </div>
       </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }
